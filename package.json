@@ -1,0 +1,26 @@
+{
+  "name": "meals4all",
+  "version": "1.0.0",
+  "description": "Food ordering platform with Super Admin, Vendor, and User portals",
+  "scripts": {
+    "install-all": "npm install --prefix backend && npm install --prefix frontend",
+    "backend": "npm run dev --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "seed-admin": "node backend/scripts/seedAdmin.js",
+    "seed-categories": "node backend/scripts/seedDefaultCategories.js"
+  },
+  "keywords": [
+    "food",
+    "ordering",
+    "delivery",
+    "restaurant",
+    "mern"
+  ],
+  "author": "Meals4All Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
+
