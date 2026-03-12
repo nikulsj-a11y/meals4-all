@@ -20,7 +20,8 @@ exports.updateProfile = async (req, res) => {
     }
 
     if (name) vendor.name = name;
-    
+    if (req.file) vendor.image = `/uploads/${req.file.filename}`;
+
     if (latitude && longitude) {
       vendor.location = {
         type: 'Point',

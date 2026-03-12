@@ -33,11 +33,11 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-macos-mesh px-4">
+      <Card className="w-full max-w-md backdrop-blur-xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Meals4All</h1>
-          <p className="text-gray-600 mt-2">Super Admin Portal</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">Meals4All</h1>
+          <p className="text-gray-500 mt-2">Super Admin Portal</p>
         </div>
 
         <form onSubmit={handleSubmit}>

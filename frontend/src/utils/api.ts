@@ -1,18 +1,24 @@
 import axios from 'axios';
 
+// export const API_BASE_URL = 'https://meals4-all.onrender.com';
+export const API_BASE_URL = 'http://localhost:5001';
 const api = axios.create({
-  baseURL: 'https://meals4-all.onrender.com/api',
+  baseURL: `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add token to requests
+// Add token to requests and handle FormData content type
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Let axios set the correct Content-Type with boundary for FormData
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
     }
     return config;
   },

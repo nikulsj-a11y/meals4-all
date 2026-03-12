@@ -141,7 +141,7 @@ const VendorAnalytics = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Selling Items</h3>
               <div className="space-y-3">
                 {analytics?.topItems.map((item, index) => (
-                  <div key={item._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={item._id} className="flex items-center justify-between p-3 bg-white/30 rounded-lg">
                     <div className="flex items-center gap-3">
                       <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-600 font-semibold text-sm">
                         {index + 1}

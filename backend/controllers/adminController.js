@@ -43,6 +43,7 @@ exports.createVendor = async (req, res) => {
     // Add optional fields if provided
     if (phone) vendorData.phone = phone;
     if (address) vendorData.address = address;
+    if (req.file) vendorData.image = `/uploads/${req.file.filename}`;
 
     // Add location if coordinates provided
     if (latitude && longitude) {
@@ -169,6 +170,7 @@ exports.updateVendor = async (req, res) => {
     vendor.email = email || vendor.email;
     vendor.phone = phone !== undefined ? phone : vendor.phone;
     vendor.address = address !== undefined ? address : vendor.address;
+    if (req.file) vendor.image = `/uploads/${req.file.filename}`;
 
     // Update location if coordinates provided
     if (latitude !== undefined && longitude !== undefined) {

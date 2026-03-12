@@ -210,7 +210,7 @@ const UserProfile = () => {
                       value={profileData.address}
                       onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3.5 py-2.5 glass-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-300 transition-all duration-200 text-gray-800"
                       placeholder="Enter your delivery address"
                     />
                   </div>
@@ -238,7 +238,7 @@ const UserProfile = () => {
                 {orders.map((order) => (
                   <div
                     key={order._id}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    className="glass rounded-xl border border-white/30 p-4 hover:shadow-md transition-shadow"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
@@ -263,7 +263,7 @@ const UserProfile = () => {
                       </span>
                     </div>
 
-                    <div className="bg-gray-50 rounded-md p-3 mb-3">
+                    <div className="bg-white/30 rounded-md p-3 mb-3">
                       <h5 className="text-sm font-medium text-gray-700 mb-2">Items:</h5>
                       {order.items.map((item, index) => {
                         const itemName = typeof item.foodItem === 'object'

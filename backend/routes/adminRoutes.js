@@ -18,6 +18,7 @@ const {
   changePassword
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 // All routes require authentication and superadmin role
 router.use(protect);
@@ -29,10 +30,10 @@ router.put('/change-password', changePassword);
 // Vendor management
 router.route('/vendors')
   .get(getAllVendors)
-  .post(createVendor);
+  .post(upload.single('image'), createVendor);
 
 router.route('/vendors/:id')
-  .put(updateVendor)
+  .put(upload.single('image'), updateVendor)
   .delete(deleteVendor);
 
 router.patch('/vendors/:id/toggle-status', toggleVendorStatus);

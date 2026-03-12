@@ -124,7 +124,11 @@ exports.getVendorMenu = async (req, res) => {
       vendor: {
         id: vendor._id,
         name: vendor.name,
-        location: vendor.location
+        location: vendor.location,
+        image: vendor.image,
+        address: vendor.address,
+        avgRating: vendor.avgRating || 0,
+        totalRatings: vendor.totalRatings || 0
       },
       menu: menuByCategory
     });
@@ -254,6 +258,74 @@ exports.getOrders = async (req, res) => {
       success: true,
       count: orders.length,
       orders
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Rate a delivered order
+// @route   POST /api/user/orders/:id/rate
+// @access  Private/User
+exports.rateOrder = async (req, res) => {
+  try {
+    const { rating, review } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a rating between 1 and 5'
+      });
+    }
+
+    const order = await Order.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    if (order.status !== 'delivered') {
+      return res.status(400).json({
+        success: false,
+        message: 'You can only rate delivered orders'
+      });
+    }
+
+    if (order.rating) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already rated this order'
+      });
+    }
+
+    // Update order with rating
+    order.rating = rating;
+    order.review = review || '';
+    await order.save();
+
+    // Update vendor average rating
+    const vendor = await Vendor.findById(order.vendor);
+    if (vendor) {
+      const newTotal = vendor.totalRatings + 1;
+      const newAvg = ((vendor.avgRating * vendor.totalRatings) + rating) / newTotal;
+      vendor.avgRating = Math.round(newAvg * 10) / 10;
+      vendor.totalRatings = newTotal;
+      await vendor.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Rating submitted successfully',
+      order
     });
   } catch (error) {
     res.status(500).json({

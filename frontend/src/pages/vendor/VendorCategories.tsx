@@ -100,8 +100,8 @@ const VendorCategories = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-white/20">
+            <thead className="bg-white/30">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category Name
@@ -114,9 +114,9 @@ const VendorCategories = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/20">
               {categories.map((category) => (
-                <tr key={category._id} className="hover:bg-gray-50">
+                <tr key={category._id} className="hover:bg-white/30">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{category.name}</div>
                   </td>
@@ -157,8 +157,8 @@ const VendorCategories = () => {
 
       {/* Create Category Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold mb-4">Create New Category</h3>
             <form onSubmit={handleCreateCategory}>
               <Input
@@ -190,8 +190,8 @@ const VendorCategories = () => {
 
       {/* Edit Category Modal */}
       {showEditModal && editingCategory && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold mb-4">Edit Category</h3>
             <form onSubmit={handleUpdateCategory}>
               <Input

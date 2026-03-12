@@ -6,7 +6,8 @@ const {
   getVendorMenu,
   placeOrder,
   getOrders,
-  getOrderById
+  getOrderById,
+  rateOrder
 } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -25,6 +26,7 @@ router.get('/vendors/:vendorId/menu', getVendorMenu);
 router.post('/orders', placeOrder);
 router.get('/orders', getOrders);
 router.get('/orders/:id', getOrderById);
+router.post('/orders/:id/rate', rateOrder);
 
 module.exports = router;
 

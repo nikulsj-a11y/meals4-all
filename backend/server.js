@@ -24,6 +24,11 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/vendor', require('./routes/vendorRoutes'));
 app.use('/api/user', require('./routes/userRoutes'));
 
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+}
+
 // Health check
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -31,6 +36,13 @@ app.get('/health', (req, res) => {
     message: 'Server is running'
   });
 });
+
+// Catch-all: serve frontend for any non-API route (must be after all API routes)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
+}
 
 // Error handler
 app.use((err, req, res, next) => {

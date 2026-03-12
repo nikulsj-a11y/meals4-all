@@ -100,7 +100,7 @@ const VendorOrders = () => {
         {/* Orders List */}
         <div className="space-y-4">
           {filteredOrders.map((order) => (
-            <div key={order._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div key={order._id} className="glass rounded-xl border border-white/30 p-4 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h3 className="font-semibold text-lg">Order #{order._id.slice(-6)}</h3>
@@ -120,7 +120,7 @@ const VendorOrders = () => {
               </div>
 
               {/* Order Items */}
-              <div className="bg-gray-50 rounded-md p-3 mb-3">
+              <div className="bg-white/30 rounded-md p-3 mb-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Items:</h4>
                 {order.items.map((item, index) => (
                   <div key={index} className="flex justify-between text-sm mb-1">

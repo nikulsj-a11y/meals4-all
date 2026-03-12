@@ -19,9 +19,19 @@ export default {
           800: '#991b1b',
           900: '#7f1d1d',
         }
+      },
+      borderRadius: {
+        'xl': '1rem',
+        '2xl': '1.25rem',
+      },
+      boxShadow: {
+        'glass': '0 4px 30px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)',
+        'glass-lg': '0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
+        'glass-xl': '0 16px 48px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05)',
+        'macos': '0 2px 8px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.12)',
+        'macos-lg': '0 8px 24px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1)',
       }
     },
   },
   plugins: [],
 }
-

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import api, { API_BASE_URL } from '../../utils/api';
 import toast from 'react-hot-toast';
 import { Vendor } from '../../types';
 import AdminLayout from '../../components/AdminLayout';
@@ -7,7 +7,7 @@ import Card from '../../components/Card';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import MapPicker from '../../components/MapPicker';
-import { Plus, Edit2, Trash2, Key } from 'lucide-react';
+import { Plus, Edit2, Trash2, Key, ImagePlus } from 'lucide-react';
 
 const AdminVendors = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -36,6 +36,22 @@ const AdminVendors = () => {
     longitude: 77.209
   });
   const [loading, setLoading] = useState(false);
+  const [createImageFile, setCreateImageFile] = useState<File | null>(null);
+  const [createImagePreview, setCreateImagePreview] = useState<string | null>(null);
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: (f: File | null) => void,
+    setPreview: (p: string | null) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
   useEffect(() => {
     fetchVendors();
@@ -55,7 +71,17 @@ const AdminVendors = () => {
     setLoading(true);
 
     try {
-      await api.post('/admin/vendors', newVendor);
+      const formData = new FormData();
+      formData.append('name', newVendor.name);
+      formData.append('email', newVendor.email);
+      if (newVendor.password) formData.append('password', newVendor.password);
+      formData.append('phone', newVendor.phone);
+      formData.append('address', newVendor.address);
+      formData.append('latitude', String(newVendor.latitude));
+      formData.append('longitude', String(newVendor.longitude));
+      if (createImageFile) formData.append('image', createImageFile);
+
+      await api.post('/admin/vendors', formData);
       toast.success('Vendor created successfully!');
       setShowCreateModal(false);
       setNewVendor({
@@ -67,6 +93,8 @@ const AdminVendors = () => {
         latitude: 28.6139,
         longitude: 77.209
       });
+      setCreateImageFile(null);
+      setCreateImagePreview(null);
       fetchVendors();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to create vendor');
@@ -95,6 +123,8 @@ const AdminVendors = () => {
       latitude: vendor.location?.coordinates?.[1] || 28.6139,
       longitude: vendor.location?.coordinates?.[0] || 77.209,
     });
+    setEditImageFile(null);
+    setEditImagePreview(vendor.image ? `${API_BASE_URL}${vendor.image}` : null);
     setShowEditModal(true);
   };
 
@@ -104,10 +134,21 @@ const AdminVendors = () => {
     setLoading(true);
 
     try {
-      await api.put(`/admin/vendors/${editingVendor._id}`, editVendor);
+      const formData = new FormData();
+      formData.append('name', editVendor.name);
+      formData.append('email', editVendor.email);
+      formData.append('phone', editVendor.phone);
+      formData.append('address', editVendor.address);
+      formData.append('latitude', String(editVendor.latitude));
+      formData.append('longitude', String(editVendor.longitude));
+      if (editImageFile) formData.append('image', editImageFile);
+
+      await api.put(`/admin/vendors/${editingVendor._id}`, formData);
       toast.success('Vendor updated successfully');
       setShowEditModal(false);
       setEditingVendor(null);
+      setEditImageFile(null);
+      setEditImagePreview(null);
       fetchVendors();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to update vendor');
@@ -174,9 +215,10 @@ const AdminVendors = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-white/20">
+            <thead className="bg-white/30">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
@@ -184,9 +226,18 @@ const AdminVendors = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/20">
               {vendors.map((vendor) => (
-                <tr key={vendor._id} className="hover:bg-gray-50">
+                <tr key={vendor._id} className="hover:bg-white/30">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {vendor.image ? (
+                      <img src={`${API_BASE_URL}${vendor.image}`} alt={vendor.name} className="w-12 h-12 rounded-lg object-cover" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                        <ImagePlus className="w-5 h-5 text-gray-400" />
+                      </div>
+                    )}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{vendor.name}</div>
                   </td>
@@ -259,8 +310,8 @@ const AdminVendors = () => {
 
       {/* Create Vendor Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h3 className="text-xl font-bold mb-4">Create New Vendor</h3>
               <form onSubmit={handleCreateVendor}>
@@ -298,6 +349,20 @@ const AdminVendors = () => {
                     required
                   />
                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Vendor Image
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      onChange={(e) => handleImageChange(e, setCreateImageFile, setCreateImagePreview)}
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:rounded-xl"
+                    />
+                    {createImagePreview && (
+                      <img src={createImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
+                    )}
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Location
                     </label>
@@ -333,8 +398,8 @@ const AdminVendors = () => {
 
       {/* Edit Vendor Modal */}
       {showEditModal && editingVendor && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <h3 className="text-xl font-bold mb-4">Edit Vendor</h3>
               <form onSubmit={handleUpdateVendor}>
@@ -364,6 +429,20 @@ const AdminVendors = () => {
                     onChange={(e) => setEditVendor({ ...editVendor, address: e.target.value })}
                     required
                   />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Vendor Image
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      onChange={(e) => handleImageChange(e, setEditImageFile, setEditImagePreview)}
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:rounded-xl"
+                    />
+                    {editImagePreview && (
+                      <img src={editImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
+                    )}
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Location
@@ -402,8 +481,8 @@ const AdminVendors = () => {
       )}
       {/* Reset Password Modal */}
       {showPasswordModal && passwordVendor && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-md w-full">
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2">Change Password</h3>
               <p className="text-sm text-gray-600 mb-4">

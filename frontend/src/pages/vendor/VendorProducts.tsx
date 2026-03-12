@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../utils/api';
+import api, { API_BASE_URL } from '../../utils/api';
 import toast from 'react-hot-toast';
 import { FoodItem, Category } from '../../types';
 import VendorLayout from '../../components/VendorLayout';
@@ -93,9 +93,7 @@ const VendorProducts = () => {
         formData.append('image', newImageFile);
       }
 
-      await api.post('/vendor/food-items', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await api.post('/vendor/food-items', formData);
       toast.success('Food item created successfully!');
       setShowCreateModal(false);
       setNewItem({ name: '', description: '', price: '', category: '', isAvailable: true, quantityAvailable: '' });
@@ -120,7 +118,7 @@ const VendorProducts = () => {
       quantityAvailable: item.quantityAvailable ? item.quantityAvailable.toString() : ''
     });
     setEditImageFile(null);
-    setEditImagePreview(item.image ? `http://localhost:5001${item.image}` : null);
+    setEditImagePreview(item.image ? `${API_BASE_URL}${item.image}` : null);
     setShowEditModal(true);
   };
 
@@ -143,9 +141,7 @@ const VendorProducts = () => {
         formData.append('image', editImageFile);
       }
 
-      await api.put(`/vendor/food-items/${editingItem._id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      await api.put(`/vendor/food-items/${editingItem._id}`, formData);
       toast.success('Food item updated successfully');
       setShowEditModal(false);
       setEditingItem(null);
@@ -206,8 +202,8 @@ const VendorProducts = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-white/20">
+            <thead className="bg-white/30">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Image
@@ -232,13 +228,13 @@ const VendorProducts = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/20">
               {foodItems.map((item) => (
-                <tr key={item._id} className="hover:bg-gray-50">
+                <tr key={item._id} className="hover:bg-white/30">
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.image ? (
                       <img
-                        src={`http://localhost:5001${item.image}`}
+                        src={`${API_BASE_URL}${item.image}`}
                         alt={item.name}
                         className="w-12 h-12 rounded-lg object-cover"
                       />
@@ -332,8 +328,8 @@ const VendorProducts = () => {
 
       {/* Create Food Item Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold mb-4">Create New Food Item</h3>
             <form onSubmit={handleCreateItem}>
               <Input
@@ -352,7 +348,7 @@ const VendorProducts = () => {
                   onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 glass-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-300 transition-all duration-200 text-gray-800"
                   placeholder="Describe your food item..."
                 />
               </div>
@@ -374,7 +370,7 @@ const VendorProducts = () => {
                   value={newItem.category}
                   onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 glass-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-300 transition-all duration-200 text-gray-800"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
@@ -392,7 +388,7 @@ const VendorProducts = () => {
                   type="file"
                   accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                   onChange={(e) => handleImageChange(e, setNewImageFile, setNewImagePreview)}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:rounded-xl"
                 />
                 {newImagePreview && (
                   <img src={newImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
@@ -414,7 +410,7 @@ const VendorProducts = () => {
                     type="checkbox"
                     checked={newItem.isAvailable}
                     onChange={(e) => setNewItem({ ...newItem, isAvailable: e.target.checked })}
-                    className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="mr-2 h-4 w-4 text-primary-500 focus:ring-primary-400 border-gray-300 rounded"
                   />
                   <span className="text-sm text-gray-700">Available for orders</span>
                 </label>
@@ -443,8 +439,8 @@ const VendorProducts = () => {
 
       {/* Edit Food Item Modal */}
       {showEditModal && editingItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold mb-4">Edit Food Item</h3>
             <form onSubmit={handleUpdateItem}>
               <Input
@@ -462,7 +458,7 @@ const VendorProducts = () => {
                   onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 glass-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-300 transition-all duration-200 text-gray-800"
                 />
               </div>
               <Input
@@ -482,7 +478,7 @@ const VendorProducts = () => {
                   value={editItem.category}
                   onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3.5 py-2.5 glass-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-300 transition-all duration-200 text-gray-800"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
@@ -500,7 +496,7 @@ const VendorProducts = () => {
                   type="file"
                   accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                   onChange={(e) => handleImageChange(e, setEditImageFile, setEditImagePreview)}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:rounded-xl"
                 />
                 {editImagePreview && (
                   <img src={editImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
@@ -522,7 +518,7 @@ const VendorProducts = () => {
                     type="checkbox"
                     checked={editItem.isAvailable}
                     onChange={(e) => setEditItem({ ...editItem, isAvailable: e.target.checked })}
-                    className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="mr-2 h-4 w-4 text-primary-500 focus:ring-primary-400 border-gray-300 rounded"
                   />
                   <span className="text-sm text-gray-700">Available for orders</span>
                 </label>

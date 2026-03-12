@@ -51,6 +51,10 @@ const vendorSchema = new mongoose.Schema({
     default: 'vendor',
     enum: ['vendor']
   },
+  image: {
+    type: String,
+    default: ''
+  },
   isActive: {
     type: Boolean,
     default: true
@@ -62,6 +66,14 @@ const vendorSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Admin'
+  },
+  avgRating: {
+    type: Number,
+    default: 0
+  },
+  totalRatings: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true

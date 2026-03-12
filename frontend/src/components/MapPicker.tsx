@@ -154,7 +154,7 @@ const MapPicker = ({ onLocationSelect, initialLocation }: MapPickerProps) => {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Search Location
         </label>
-        <form onSubmit={handleSearch} className="flex gap-2">
+        <form className="flex gap-2">
           <input
             type="text"
             value={searchQuery}
@@ -163,7 +163,8 @@ const MapPicker = ({ onLocationSelect, initialLocation }: MapPickerProps) => {
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <button
-            type="submit"
+            type="button"
+            onClick={handleSearch}
             disabled={isSearching}
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50"
           >

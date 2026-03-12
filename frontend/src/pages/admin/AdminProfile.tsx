@@ -73,7 +73,7 @@ const AdminProfile = () => {
                 <Mail className="w-4 h-4 inline mr-2" />
                 Email Address
               </label>
-              <div className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+              <div className="px-4 py-2 glass rounded-xl border border-white/30 text-gray-700">
                 {user?.email}
               </div>
             </div>
@@ -82,7 +82,7 @@ const AdminProfile = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Role
               </label>
-              <div className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+              <div className="px-4 py-2 glass rounded-xl border border-white/30 text-gray-700">
                 Super Admin
               </div>
             </div>
@@ -128,8 +128,8 @@ const AdminProfile = () => {
 
       {/* Change Password Modal */}
       {showPasswordModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl max-w-md w-full p-6">
             <h3 className="text-xl font-bold mb-4">Change Password</h3>
             <form onSubmit={handleChangePassword}>
               <div className="space-y-4">

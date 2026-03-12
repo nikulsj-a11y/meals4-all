@@ -56,11 +56,11 @@ const UserLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-macos-mesh px-4">
+      <Card className="w-full max-w-md backdrop-blur-xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Meals4All</h1>
-          <p className="text-gray-600 mt-2">User Portal</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">Meals4All</h1>
+          <p className="text-gray-500 mt-2">User Portal</p>
         </div>
 
         {step === 'mobile' ? (
@@ -82,13 +82,13 @@ const UserLogin = () => {
           </form>
         ) : (
           <form onSubmit={handleVerifyOTP}>
-            <div className="mb-4 p-3 bg-gray-100 rounded-lg">
-              <p className="text-sm text-gray-600">OTP sent to</p>
-              <p className="font-semibold">{mobileNumber}</p>
+            <div className="mb-4 p-3 glass rounded-xl">
+              <p className="text-sm text-gray-500">OTP sent to</p>
+              <p className="font-semibold text-gray-800">{mobileNumber}</p>
               <button
                 type="button"
                 onClick={() => setStep('mobile')}
-                className="text-sm text-primary-600 hover:underline mt-1"
+                className="text-sm text-primary-500 hover:text-primary-600 mt-1 transition-colors"
               >
                 Change number
               </button>
@@ -119,7 +119,7 @@ const UserLogin = () => {
           </form>
         )}
 
-        <div className="mt-6 text-center text-sm text-gray-600">
+        {/* <div className="mt-6 text-center text-sm text-gray-600">
           <a href="/admin/login" className="text-primary-600 hover:underline">
             Admin Login
           </a>
@@ -127,7 +127,7 @@ const UserLogin = () => {
           <a href="/vendor/login" className="text-primary-600 hover:underline">
             Vendor Login
           </a>
-        </div>
+        </div> */}
       </Card>
     </div>
   );

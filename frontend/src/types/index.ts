@@ -6,6 +6,7 @@ export interface User {
   role: 'superadmin' | 'vendor' | 'user';
   phone?: string;
   address?: string;
+  image?: string;
   isActive?: boolean;
   location?: {
     type: string;
@@ -33,7 +34,10 @@ export interface Vendor {
     coordinates: number[];
     address: string;
   };
+  image?: string;
   isActive: boolean;
+  avgRating?: number;
+  totalRatings?: number;
   createdAt: string;
 }
 
@@ -80,6 +84,8 @@ export interface Order {
     coordinates: number[];
   };
   userMobile?: string;
+  rating?: number | null;
+  review?: string;
   createdAt: string;
 }
 

@@ -71,6 +71,16 @@ const orderSchema = new mongoose.Schema({
   userMobile: {
     type: String,
     required: true
+  },
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    default: null
+  },
+  review: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true

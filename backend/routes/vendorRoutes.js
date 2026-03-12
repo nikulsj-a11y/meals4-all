@@ -25,7 +25,7 @@ router.use(protect);
 router.use(authorize('vendor'));
 
 // Profile management
-router.put('/profile', updateProfile);
+router.put('/profile', upload.single('image'), updateProfile);
 router.put('/change-password', changePassword);
 
 // Category management
