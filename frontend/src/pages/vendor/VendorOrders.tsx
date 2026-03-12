@@ -108,7 +108,7 @@ const VendorOrders = () => {
                     {new Date(order.createdAt).toLocaleString()}
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
-                    Customer: {typeof order.customer === 'object' ? order.customer.name : 'Unknown'}
+                    Customer: {typeof order.user === 'object' ? (order.user.name || order.user.mobileNumber) : (order.userMobile || 'Unknown')}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
