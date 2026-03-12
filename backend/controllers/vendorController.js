@@ -3,12 +3,27 @@ const Category = require('../models/Category');
 const FoodItem = require('../models/FoodItem');
 const Order = require('../models/Order');
 
+// @desc    Get vendor profile
+// @route   GET /api/vendor/profile
+// @access  Private/Vendor
+exports.getProfile = async (req, res) => {
+  try {
+    const vendor = await Vendor.findById(req.user._id).select('-password');
+    if (!vendor) {
+      return res.status(404).json({ success: false, message: 'Vendor not found' });
+    }
+    res.status(200).json({ success: true, vendor });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Update vendor profile
 // @route   PUT /api/vendor/profile
 // @access  Private/Vendor
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, latitude, longitude, address } = req.body;
+    const { name, phone, latitude, longitude, address } = req.body;
 
     const vendor = await Vendor.findById(req.user._id);
 
@@ -20,7 +35,9 @@ exports.updateProfile = async (req, res) => {
     }
 
     if (name) vendor.name = name;
+    if (phone !== undefined) vendor.phone = phone;
     if (req.file) vendor.image = `/uploads/${req.file.filename}`;
+    if (address) vendor.address = address;
 
     if (latitude && longitude) {
       vendor.location = {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api, { API_BASE_URL } from '../../utils/api';
@@ -14,16 +14,38 @@ const VendorProfile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [vendorData, setVendorData] = useState<any>(null);
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
-    phone: user?.phone || '',
-    address: user?.address || user?.location?.address || '',
-    latitude: user?.location?.coordinates?.[1] || 28.6139,
-    longitude: user?.location?.coordinates?.[0] || 77.209
+    name: '',
+    phone: '',
+    address: '',
+    latitude: 28.6139,
+    longitude: 77.209
   });
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await api.get('/vendor/profile');
+      const v = response.data.vendor;
+      setVendorData(v);
+      setProfileData({
+        name: v.name || '',
+        phone: v.phone || '',
+        address: v.address || v.location?.address || '',
+        latitude: v.location?.coordinates?.[1] || 28.6139,
+        longitude: v.location?.coordinates?.[0] || 77.209
+      });
+    } catch (error: any) {
+      toast.error('Failed to fetch profile');
+    }
+  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +54,7 @@ const VendorProfile = () => {
     try {
       const formData = new FormData();
       formData.append('name', profileData.name);
+      formData.append('phone', profileData.phone);
       formData.append('latitude', String(profileData.latitude));
       formData.append('longitude', String(profileData.longitude));
       formData.append('address', profileData.address);
@@ -40,8 +63,9 @@ const VendorProfile = () => {
       await api.put('/vendor/profile', formData);
       toast.success('Profile updated successfully');
       setShowEditModal(false);
-      // Refresh the page to show updated data
-      window.location.reload();
+      setImageFile(null);
+      setImagePreview(null);
+      fetchProfile();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to update profile');
     } finally {
@@ -61,15 +85,15 @@ const VendorProfile = () => {
         <Card>
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              {user?.image ? (
-                <img src={`${API_BASE_URL}${user?.image}`} alt={user?.name} className="w-16 h-16 rounded-full object-cover" />
+              {vendorData?.image ? (
+                <img src={`${API_BASE_URL}${vendorData.image}`} alt={vendorData.name} className="w-16 h-16 rounded-full object-cover" />
               ) : (
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
-                  <Store className="w-8 h-8 text-primary-600" />
+                <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center">
+                  <Store className="w-8 h-8 text-orange-400" />
                 </div>
               )}
               <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">{user?.name}</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{vendorData?.name || user?.name}</h3>
                 <p className="text-sm text-gray-600">Vendor Account</p>
               </div>
             </div>
@@ -84,8 +108,8 @@ const VendorProfile = () => {
                 <User className="w-4 h-4 inline mr-2" />
                 Vendor Name
               </label>
-              <div className="px-4 py-2 glass rounded-xl border border-white/30 text-gray-700">
-                {user?.name}
+              <div className="px-4 py-2 bg-gray-50 rounded-xl border border-gray-200 text-gray-700">
+                {vendorData?.name || user?.name}
               </div>
             </div>
 
@@ -94,8 +118,8 @@ const VendorProfile = () => {
                 <Mail className="w-4 h-4 inline mr-2" />
                 Email Address
               </label>
-              <div className="px-4 py-2 glass rounded-xl border border-white/30 text-gray-700">
-                {user?.email}
+              <div className="px-4 py-2 bg-gray-50 rounded-xl border border-gray-200 text-gray-700">
+                {vendorData?.email || user?.email}
               </div>
             </div>
 
@@ -104,8 +128,8 @@ const VendorProfile = () => {
                 <Phone className="w-4 h-4 inline mr-2" />
                 Phone Number
               </label>
-              <div className="px-4 py-2 glass rounded-xl border border-white/30 text-gray-700">
-                {user?.phone || 'Not provided'}
+              <div className="px-4 py-2 bg-gray-50 rounded-xl border border-gray-200 text-gray-700">
+                {vendorData?.phone || 'Not provided'}
               </div>
             </div>
 
@@ -114,8 +138,8 @@ const VendorProfile = () => {
                 <MapPin className="w-4 h-4 inline mr-2" />
                 Address
               </label>
-              <div className="px-4 py-2 glass rounded-xl border border-white/30 text-gray-700">
-                {user?.address || user?.location?.address || 'Not provided'}
+              <div className="px-4 py-2 bg-gray-50 rounded-xl border border-gray-200 text-gray-700">
+                {vendorData?.address || vendorData?.location?.address || 'Not provided'}
               </div>
             </div>
 
@@ -124,14 +148,14 @@ const VendorProfile = () => {
                 Account Status
               </label>
               <div className={`px-4 py-2 rounded-lg ${
-                user?.isActive
+                vendorData?.isActive
                   ? 'bg-green-50 border border-green-200'
                   : 'bg-red-50 border border-red-200'
               }`}>
                 <span className={`font-medium ${
-                  user?.isActive ? 'text-green-700' : 'text-red-700'
+                  vendorData?.isActive ? 'text-green-700' : 'text-red-700'
                 }`}>
-                  {user?.isActive ? 'Active' : 'Inactive'}
+                  {vendorData?.isActive ? 'Active' : 'Inactive'}
                 </span>
               </div>
             </div>
@@ -179,6 +203,12 @@ const VendorProfile = () => {
                   onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                   required
                 />
+                <Input
+                  label="Phone Number"
+                  value={profileData.phone}
+                  onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                  placeholder="Enter phone number"
+                />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Vendor Image
@@ -193,11 +223,11 @@ const VendorProfile = () => {
                         setImagePreview(URL.createObjectURL(file));
                       }
                     }}
-                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:rounded-xl"
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:rounded-xl file:cursor-pointer transition-all"
                   />
-                  {(imagePreview || user?.image) && (
+                  {(imagePreview || vendorData?.image) && (
                     <img
-                      src={imagePreview || `${API_BASE_URL}${user?.image}`}
+                      src={imagePreview || `${API_BASE_URL}${vendorData?.image}`}
                       alt="Preview"
                       className="mt-2 w-32 h-32 rounded-lg object-cover"
                     />

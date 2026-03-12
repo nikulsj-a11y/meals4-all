@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
+  getProfile,
   updateProfile,
   changePassword,
   getCategories,
@@ -25,6 +26,7 @@ router.use(protect);
 router.use(authorize('vendor'));
 
 // Profile management
+router.get('/profile', getProfile);
 router.put('/profile', upload.single('image'), updateProfile);
 router.put('/change-password', changePassword);
 
