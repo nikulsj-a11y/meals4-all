@@ -1,40 +1,36 @@
-const twilio = require('twilio');
-
-// Initialize Twilio client only if credentials are provided
-let client = null;
-if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-  client = twilio(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
-}
-
 // Generate 6-digit OTP
 exports.generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Send OTP via SMS
+// Send OTP via 2Factor.in
 exports.sendOTP = async (mobileNumber, otp) => {
-  try {
-    // In development or if Twilio not configured, just log the OTP
-    if (!client) {
-      console.log(`\n📱 OTP for ${mobileNumber}: ${otp}\n`);
-      return { success: true, message: 'OTP logged in console (dev mode)' };
-    }
+  const apiKey = process.env.TWO_FACTOR_API_KEY;
 
-    // In production, send via Twilio
-    const message = await client.messages.create({
-      body: `Your Meals4All OTP is: ${otp}. Valid for 10 minutes.`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: `+91${mobileNumber}`
+  // If no API key, use dev/fallback mode
+  if (!apiKey) {
+    console.log(`\n📱 OTP for ${mobileNumber}: ${otp}\n`);
+    return { success: true, message: 'OTP logged in console (dev mode)' };
+  }
+
+  try {
+    const response = await fetch(`https://2factor.in/API/V1/${apiKey}/SMS/${mobileNumber}/${otp}`, {
+      method: 'GET',
     });
 
-    return { success: true, message: 'OTP sent successfully', sid: message.sid };
+    const data = await response.json();
+
+    if (data.Status === 'Success') {
+      console.log(`✅ OTP sent to ${mobileNumber} via 2Factor.in`);
+      return { success: true, message: 'OTP sent successfully' };
+    } else {
+      console.error('2Factor.in error:', data.Details);
+      console.log(`\n📱 OTP for ${mobileNumber}: ${otp} (2Factor.in failed, using fallback)\n`);
+      return { success: true, message: 'OTP logged in console (fallback mode)' };
+    }
   } catch (error) {
     console.error('Error sending OTP:', error);
-    // Fallback to dev mode if Twilio fails (e.g. invalid credentials)
-    console.log(`\n📱 OTP for ${mobileNumber}: ${otp} (Twilio failed, using fallback)\n`);
+    console.log(`\n📱 OTP for ${mobileNumber}: ${otp} (2Factor.in failed, using fallback)\n`);
     return { success: true, message: 'OTP logged in console (fallback mode)' };
   }
 };
@@ -43,4 +39,3 @@ exports.sendOTP = async (mobileNumber, otp) => {
 exports.isOTPValid = (otpExpiry) => {
   return new Date() < new Date(otpExpiry);
 };
-
