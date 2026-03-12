@@ -545,6 +545,45 @@ exports.getAnalytics = async (req, res) => {
   }
 };
 
+// @desc    Reset vendor password (by admin)
+// @route   PUT /api/admin/vendors/:id/reset-password
+// @access  Private/SuperAdmin
+exports.resetVendorPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a new password with at least 6 characters'
+      });
+    }
+
+    const vendor = await Vendor.findById(req.params.id);
+
+    if (!vendor) {
+      return res.status(404).json({
+        success: false,
+        message: 'Vendor not found'
+      });
+    }
+
+    vendor.password = newPassword;
+    vendor.isFirstLogin = true;
+    await vendor.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Vendor password reset successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 // @desc    Change admin password
 // @route   PUT /api/admin/change-password
 // @access  Private/SuperAdmin

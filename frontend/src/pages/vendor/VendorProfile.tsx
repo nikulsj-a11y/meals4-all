@@ -182,10 +182,13 @@ const VendorProfile = () => {
                     Location
                   </label>
                   <MapPicker
-                    latitude={profileData.latitude}
-                    longitude={profileData.longitude}
-                    onLocationChange={(lat, lng) =>
-                      setProfileData({ ...profileData, latitude: lat, longitude: lng })
+                    initialLocation={{
+                      latitude: profileData.latitude,
+                      longitude: profileData.longitude,
+                      address: profileData.address
+                    }}
+                    onLocationSelect={(loc: { address: string; latitude: number; longitude: number }) =>
+                      setProfileData({ ...profileData, latitude: loc.latitude, longitude: loc.longitude, address: loc.address })
                     }
                   />
                 </div>

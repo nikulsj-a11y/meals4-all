@@ -7,13 +7,17 @@ import Card from '../../components/Card';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import MapPicker from '../../components/MapPicker';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Key } from 'lucide-react';
 
 const AdminVendors = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
+  const [passwordVendor, setPasswordVendor] = useState<Vendor | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [newVendor, setNewVendor] = useState({
     name: '',
     email: '',
@@ -112,6 +116,35 @@ const AdminVendors = () => {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordVendor) return;
+
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.put(`/admin/vendors/${passwordVendor._id}/reset-password`, { newPassword });
+      toast.success('Vendor password updated successfully');
+      setShowPasswordModal(false);
+      setPasswordVendor(null);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to reset password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteVendor = async (vendorId: string, vendorName: string) => {
     if (!window.confirm(`Are you sure you want to delete vendor "${vendorName}"? This action cannot be undone.`)) {
       return;
@@ -182,6 +215,19 @@ const AdminVendors = () => {
                         className="text-sm px-3 py-1"
                       >
                         <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setPasswordVendor(vendor);
+                          setNewPassword('');
+                          setConfirmPassword('');
+                          setShowPasswordModal(true);
+                        }}
+                        variant="secondary"
+                        className="text-sm px-3 py-1"
+                        title="Change Password"
+                      >
+                        <Key className="w-4 h-4" />
                       </Button>
                       <Button
                         onClick={() => handleToggleStatus(vendor._id)}
@@ -256,10 +302,13 @@ const AdminVendors = () => {
                       Location
                     </label>
                     <MapPicker
-                      latitude={newVendor.latitude}
-                      longitude={newVendor.longitude}
-                      onLocationChange={(lat, lng) =>
-                        setNewVendor({ ...newVendor, latitude: lat, longitude: lng })
+                      initialLocation={{
+                        latitude: newVendor.latitude,
+                        longitude: newVendor.longitude,
+                        address: newVendor.address
+                      }}
+                      onLocationSelect={(loc: { address: string; latitude: number; longitude: number }) =>
+                        setNewVendor({ ...newVendor, latitude: loc.latitude, longitude: loc.longitude, address: loc.address })
                       }
                     />
                   </div>
@@ -320,10 +369,13 @@ const AdminVendors = () => {
                       Location
                     </label>
                     <MapPicker
-                      latitude={editVendor.latitude}
-                      longitude={editVendor.longitude}
-                      onLocationChange={(lat, lng) =>
-                        setEditVendor({ ...editVendor, latitude: lat, longitude: lng })
+                      initialLocation={{
+                        latitude: editVendor.latitude,
+                        longitude: editVendor.longitude,
+                        address: editVendor.address
+                      }}
+                      onLocationSelect={(loc: { address: string; latitude: number; longitude: number }) =>
+                        setEditVendor({ ...editVendor, latitude: loc.latitude, longitude: loc.longitude, address: loc.address })
                       }
                     />
                   </div>
@@ -338,6 +390,53 @@ const AdminVendors = () => {
                     onClick={() => {
                       setShowEditModal(false);
                       setEditingVendor(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Reset Password Modal */}
+      {showPasswordModal && passwordVendor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full">
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2">Change Password</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Reset password for <span className="font-medium">{passwordVendor.name}</span>
+              </p>
+              <form onSubmit={handleResetPassword}>
+                <div className="space-y-4">
+                  <Input
+                    label="New Password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Minimum 6 characters"
+                    required
+                  />
+                  <Input
+                    label="Confirm Password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Updating...' : 'Update Password'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPasswordVendor(null);
                     }}
                   >
                     Cancel

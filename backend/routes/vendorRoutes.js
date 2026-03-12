@@ -18,6 +18,7 @@ const {
   getAnalytics
 } = require('../controllers/vendorController');
 const { protect, authorize } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 // All routes require authentication and vendor role
 router.use(protect);
@@ -35,8 +36,8 @@ router.delete('/categories/:id', deleteCategory);
 
 // Food item management
 router.get('/food-items', getFoodItems);
-router.post('/food-items', createFoodItem);
-router.put('/food-items/:id', updateFoodItem);
+router.post('/food-items', upload.single('image'), createFoodItem);
+router.put('/food-items/:id', upload.single('image'), updateFoodItem);
 router.delete('/food-items/:id', deleteFoodItem);
 
 // Order management

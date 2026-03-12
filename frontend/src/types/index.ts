@@ -4,6 +4,14 @@ export interface User {
   mobileNumber?: string;
   name?: string;
   role: 'superadmin' | 'vendor' | 'user';
+  phone?: string;
+  address?: string;
+  isActive?: boolean;
+  location?: {
+    type: string;
+    coordinates: number[];
+    address: string;
+  };
 }
 
 export interface AuthContextType {

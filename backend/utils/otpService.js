@@ -18,7 +18,7 @@ exports.generateOTP = () => {
 exports.sendOTP = async (mobileNumber, otp) => {
   try {
     // In development or if Twilio not configured, just log the OTP
-    if (process.env.NODE_ENV === 'development' || !client) {
+    if (!client) {
       console.log(`\n📱 OTP for ${mobileNumber}: ${otp}\n`);
       return { success: true, message: 'OTP logged in console (dev mode)' };
     }

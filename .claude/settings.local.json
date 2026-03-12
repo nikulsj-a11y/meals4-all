@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"FormData\\\\|multipart\\\\|upload\\\\|image\" /Users/nikulsj/meals4all/backend --include=*.js)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

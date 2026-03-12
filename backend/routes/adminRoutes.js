@@ -6,6 +6,7 @@ const {
   updateVendor,
   deleteVendor,
   toggleVendorStatus,
+  resetVendorPassword,
   getAllCategories,
   createCategory,
   updateCategory,
@@ -35,6 +36,7 @@ router.route('/vendors/:id')
   .delete(deleteVendor);
 
 router.patch('/vendors/:id/toggle-status', toggleVendorStatus);
+router.put('/vendors/:id/reset-password', resetVendorPassword);
 
 // Category management
 router.route('/categories')

@@ -271,14 +271,20 @@ exports.createFoodItem = async (req, res) => {
       });
     }
 
-    const foodItem = await FoodItem.create({
+    const foodItemData = {
       name,
       description,
       price,
       category,
       vendor: req.user._id,
       isAvailable: isAvailable !== undefined ? isAvailable : true
-    });
+    };
+
+    if (req.file) {
+      foodItemData.image = `/uploads/${req.file.filename}`;
+    }
+
+    const foodItem = await FoodItem.create(foodItemData);
 
     await foodItem.populate('category', 'name');
 
@@ -318,6 +324,10 @@ exports.updateFoodItem = async (req, res) => {
     if (description !== undefined) foodItem.description = description;
     if (price) foodItem.price = price;
     if (isAvailable !== undefined) foodItem.isAvailable = isAvailable;
+
+    if (req.file) {
+      foodItem.image = `/uploads/${req.file.filename}`;
+    }
 
     if (category) {
       const categoryDoc = await Category.findOne({

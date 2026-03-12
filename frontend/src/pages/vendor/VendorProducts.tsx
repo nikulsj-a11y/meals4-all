@@ -6,7 +6,7 @@ import VendorLayout from '../../components/VendorLayout';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
-import { Plus, Edit2, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, EyeOff, ImagePlus } from 'lucide-react';
 
 const VendorProducts = () => {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
@@ -30,6 +30,10 @@ const VendorProducts = () => {
     isAvailable: true,
     quantityAvailable: ''
   });
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [newImagePreview, setNewImagePreview] = useState<string | null>(null);
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -55,25 +59,48 @@ const VendorProducts = () => {
     }
   };
 
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: (f: File | null) => void,
+    setPreview: (p: string | null) => void
+  ) => {
+    const file = e.target.files?.[0] || null;
+    setFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  };
+
   const handleCreateItem = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const payload: any = {
-        ...newItem,
-        price: parseFloat(newItem.price)
-      };
-
-      // Only include quantityAvailable if it's provided
+      const formData = new FormData();
+      formData.append('name', newItem.name);
+      formData.append('description', newItem.description);
+      formData.append('price', newItem.price);
+      formData.append('category', newItem.category);
+      formData.append('isAvailable', String(newItem.isAvailable));
       if (newItem.quantityAvailable) {
-        payload.quantityAvailable = parseInt(newItem.quantityAvailable);
+        formData.append('quantityAvailable', newItem.quantityAvailable);
+      }
+      if (newImageFile) {
+        formData.append('image', newImageFile);
       }
 
-      await api.post('/vendor/food-items', payload);
+      await api.post('/vendor/food-items', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       toast.success('Food item created successfully!');
       setShowCreateModal(false);
       setNewItem({ name: '', description: '', price: '', category: '', isAvailable: true, quantityAvailable: '' });
+      setNewImageFile(null);
+      setNewImagePreview(null);
       fetchFoodItems();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to create food item');
@@ -92,6 +119,8 @@ const VendorProducts = () => {
       isAvailable: item.isAvailable,
       quantityAvailable: item.quantityAvailable ? item.quantityAvailable.toString() : ''
     });
+    setEditImageFile(null);
+    setEditImagePreview(item.image ? `http://localhost:5001${item.image}` : null);
     setShowEditModal(true);
   };
 
@@ -101,22 +130,27 @@ const VendorProducts = () => {
     setLoading(true);
 
     try {
-      const payload: any = {
-        ...editItem,
-        price: parseFloat(editItem.price)
-      };
-
-      // Only include quantityAvailable if it's provided
+      const formData = new FormData();
+      formData.append('name', editItem.name);
+      formData.append('description', editItem.description);
+      formData.append('price', editItem.price);
+      formData.append('category', editItem.category);
+      formData.append('isAvailable', String(editItem.isAvailable));
       if (editItem.quantityAvailable) {
-        payload.quantityAvailable = parseInt(editItem.quantityAvailable);
-      } else {
-        payload.quantityAvailable = null;
+        formData.append('quantityAvailable', editItem.quantityAvailable);
+      }
+      if (editImageFile) {
+        formData.append('image', editImageFile);
       }
 
-      await api.put(`/vendor/food-items/${editingItem._id}`, payload);
+      await api.put(`/vendor/food-items/${editingItem._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       toast.success('Food item updated successfully');
       setShowEditModal(false);
       setEditingItem(null);
+      setEditImageFile(null);
+      setEditImagePreview(null);
       fetchFoodItems();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to update food item');
@@ -176,6 +210,9 @@ const VendorProducts = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Image
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -198,6 +235,19 @@ const VendorProducts = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {foodItems.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {item.image ? (
+                      <img
+                        src={`http://localhost:5001${item.image}`}
+                        alt={item.name}
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                        <ImagePlus className="w-5 h-5 text-gray-400" />
+                      </div>
+                    )}
+                  </td>
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900">{item.name}</div>
                     <div className="text-sm text-gray-500">{item.description}</div>
@@ -334,6 +384,20 @@ const VendorProducts = () => {
                   ))}
                 </select>
               </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  onChange={(e) => handleImageChange(e, setNewImageFile, setNewImagePreview)}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {newImagePreview && (
+                  <img src={newImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
+                )}
+              </div>
               <Input
                 label="Quantity Available (Optional)"
                 type="number"
@@ -365,6 +429,8 @@ const VendorProducts = () => {
                   onClick={() => {
                     setShowCreateModal(false);
                     setNewItem({ name: '', description: '', price: '', category: '', isAvailable: true, quantityAvailable: '' });
+                    setNewImageFile(null);
+                    setNewImagePreview(null);
                   }}
                 >
                   Cancel
@@ -426,6 +492,20 @@ const VendorProducts = () => {
                   ))}
                 </select>
               </div>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  onChange={(e) => handleImageChange(e, setEditImageFile, setEditImagePreview)}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {editImagePreview && (
+                  <img src={editImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
+                )}
+              </div>
               <Input
                 label="Quantity Available (Optional)"
                 type="number"
@@ -457,6 +537,8 @@ const VendorProducts = () => {
                   onClick={() => {
                     setShowEditModal(false);
                     setEditingItem(null);
+                    setEditImageFile(null);
+                    setEditImagePreview(null);
                   }}
                 >
                   Cancel

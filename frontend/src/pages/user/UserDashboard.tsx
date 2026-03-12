@@ -9,7 +9,7 @@ import Button from '../../components/Button';
 import { LogOut, MapPin, ShoppingCart, History, Plus, Minus, User, Loader2 } from 'lucide-react';
 
 const UserDashboard = () => {
-  const { logout, user, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'vendors' | 'cart' | 'orders'>('vendors');
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -67,7 +67,7 @@ const UserDashboard = () => {
             setLocationLoading(false);
           }
         },
-        (error) => {
+        () => {
           toast.error('Please enable location access');
           // Default location for testing
           setLocation({ latitude: 28.6139, longitude: 77.2090, address: 'Delhi, India' });
