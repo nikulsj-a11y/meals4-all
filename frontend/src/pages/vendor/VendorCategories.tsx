@@ -93,54 +93,44 @@ const VendorCategories = () => {
             <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
             <p className="text-sm text-gray-600 mt-1">Manage your food categories</p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)}>
-            <Plus className="w-4 h-4 inline mr-2" />
+          <button onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 active:scale-[0.97] transition-all shadow-sm">
+            <Plus className="w-4 h-4" />
             Add Category
-          </Button>
+          </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/20">
-            <thead className="bg-white/30">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-gray-200/60">
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Category Name</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/20">
+            <tbody className="divide-y divide-gray-100">
               {categories.map((category) => (
-                <tr key={category._id} className="hover:bg-white/30">
+                <tr key={category._id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{category.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs rounded-full font-medium bg-green-100 text-green-800">
-                      Active
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="text-xs font-medium text-emerald-600">Active</span>
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => handleEditCategory(category)}
-                        variant="secondary"
-                        className="text-sm px-3 py-1"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        onClick={() => handleDeleteCategory(category._id, category.name)}
-                        variant="danger"
-                        className="text-sm px-3 py-1"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => handleEditCategory(category)}
+                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-blue-50 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-all" title="Edit">
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleDeleteCategory(category._id, category.name)}
+                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all" title="Delete">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -158,7 +148,7 @@ const VendorCategories = () => {
       {/* Create Category Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-md w-full p-6">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <h3 className="text-xl font-bold mb-4">Create New Category</h3>
             <form onSubmit={handleCreateCategory}>
               <Input
@@ -191,7 +181,7 @@ const VendorCategories = () => {
       {/* Edit Category Modal */}
       {showEditModal && editingCategory && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-md w-full p-6">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <h3 className="text-xl font-bold mb-4">Edit Category</h3>
             <form onSubmit={handleUpdateCategory}>
               <Input

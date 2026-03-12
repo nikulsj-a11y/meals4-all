@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import { Vendor } from '../../types';
 import AdminLayout from '../../components/AdminLayout';
 import Card from '../../components/Card';
-import Button from '../../components/Button';
 import Input from '../../components/Input';
 import MapPicker from '../../components/MapPicker';
 import { Plus, Edit2, Trash2, Key, ImagePlus } from 'lucide-react';
@@ -18,6 +17,7 @@ const AdminVendors = () => {
   const [passwordVendor, setPasswordVendor] = useState<Vendor | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentLocation, setCurrentLocation] = useState({ latitude: 28.6139, longitude: 77.209 });
   const [newVendor, setNewVendor] = useState({
     name: '',
     email: '',
@@ -55,6 +55,17 @@ const AdminVendors = () => {
 
   useEffect(() => {
     fetchVendors();
+    // Get admin's current location as default for new vendors
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ latitude, longitude });
+          setNewVendor(prev => ({ ...prev, latitude, longitude }));
+        },
+        () => {} // Keep fallback Delhi coords on error
+      );
+    }
   }, []);
 
   const fetchVendors = async () => {
@@ -90,8 +101,8 @@ const AdminVendors = () => {
         password: '',
         phone: '',
         address: '',
-        latitude: 28.6139,
-        longitude: 77.209
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude
       });
       setCreateImageFile(null);
       setCreateImagePreview(null);
@@ -206,35 +217,38 @@ const AdminVendors = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Vendor Management</h2>
-            <p className="text-sm text-gray-600 mt-1">Create and manage all vendors</p>
+            <p className="text-sm text-gray-500 mt-1">Create and manage all vendors</p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)}>
-            <Plus className="w-4 h-4 inline mr-2" />
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 active:scale-[0.97] transition-all shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
             Create Vendor
-          </Button>
+          </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/20">
-            <thead className="bg-white/30">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-gray-200/60">
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Image</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Phone</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/20">
+            <tbody className="divide-y divide-gray-100">
               {vendors.map((vendor) => (
-                <tr key={vendor._id} className="hover:bg-white/30">
+                <tr key={vendor._id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     {vendor.image ? (
-                      <img src={`${API_BASE_URL}${vendor.image}`} alt={vendor.name} className="w-12 h-12 rounded-lg object-cover" />
+                      <img src={`${API_BASE_URL}${vendor.image}`} alt={vendor.name} className="w-10 h-10 rounded-xl object-cover ring-1 ring-gray-100" />
                     ) : (
-                      <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                        <ImagePlus className="w-5 h-5 text-gray-400" />
+                      <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center ring-1 ring-gray-100">
+                        <ImagePlus className="w-4 h-4 text-gray-300" />
                       </div>
                     )}
                   </td>
@@ -248,52 +262,51 @@ const AdminVendors = () => {
                     <div className="text-sm text-gray-600">{vendor.phone || 'N/A'}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full font-medium ${
-                        vendor.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {vendor.isActive ? 'Active' : 'Disabled'}
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${vendor.isActive ? 'bg-emerald-400' : 'bg-gray-300'}`} />
+                      <span className={`text-xs font-medium ${vendor.isActive ? 'text-emerald-600' : 'text-gray-400'}`}>
+                        {vendor.isActive ? 'Active' : 'Disabled'}
+                      </span>
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex gap-2">
-                      <Button
+                    <div className="flex items-center gap-1.5">
+                      <button
                         onClick={() => handleEditVendor(vendor)}
-                        variant="secondary"
-                        className="text-sm px-3 py-1"
+                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-blue-50 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-all"
+                        title="Edit"
                       >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                      <Button
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
                         onClick={() => {
                           setPasswordVendor(vendor);
                           setNewPassword('');
                           setConfirmPassword('');
                           setShowPasswordModal(true);
                         }}
-                        variant="secondary"
-                        className="text-sm px-3 py-1"
+                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-purple-50 flex items-center justify-center text-gray-500 hover:text-purple-600 transition-all"
                         title="Change Password"
                       >
-                        <Key className="w-4 h-4" />
-                      </Button>
-                      <Button
+                        <Key className="w-3.5 h-3.5" />
+                      </button>
+                      <button
                         onClick={() => handleToggleStatus(vendor._id)}
-                        variant={vendor.isActive ? 'danger' : 'primary'}
-                        className="text-sm px-3 py-1"
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          vendor.isActive
+                            ? 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+                            : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                        }`}
                       >
                         {vendor.isActive ? 'Disable' : 'Enable'}
-                      </Button>
-                      <Button
+                      </button>
+                      <button
                         onClick={() => handleDeleteVendor(vendor._id, vendor.name)}
-                        variant="danger"
-                        className="text-sm px-3 py-1"
+                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all"
+                        title="Delete"
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -311,7 +324,7 @@ const AdminVendors = () => {
       {/* Create Vendor Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-6">
               <h3 className="text-xl font-bold mb-4">Create New Vendor</h3>
               <form onSubmit={handleCreateVendor}>
@@ -356,7 +369,7 @@ const AdminVendors = () => {
                       type="file"
                       accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                       onChange={(e) => handleImageChange(e, setCreateImageFile, setCreateImagePreview)}
-                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:rounded-xl"
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:rounded-xl file:cursor-pointer transition-all"
                     />
                     {createImagePreview && (
                       <img src={createImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
@@ -379,16 +392,14 @@ const AdminVendors = () => {
                   </div>
                 </div>
                 <div className="flex gap-3 mt-6">
-                  <Button type="submit" disabled={loading}>
+                  <button type="submit" disabled={loading}
+                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? 'Creating...' : 'Create Vendor'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => setShowCreateModal(false)}
-                  >
+                  </button>
+                  <button type="button" onClick={() => setShowCreateModal(false)}
+                    className="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-200 active:scale-[0.97] transition-all">
                     Cancel
-                  </Button>
+                  </button>
                 </div>
               </form>
             </div>
@@ -399,7 +410,7 @@ const AdminVendors = () => {
       {/* Edit Vendor Modal */}
       {showEditModal && editingVendor && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-6">
               <h3 className="text-xl font-bold mb-4">Edit Vendor</h3>
               <form onSubmit={handleUpdateVendor}>
@@ -437,7 +448,7 @@ const AdminVendors = () => {
                       type="file"
                       accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                       onChange={(e) => handleImageChange(e, setEditImageFile, setEditImagePreview)}
-                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:rounded-xl"
+                      className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:rounded-xl file:cursor-pointer transition-all"
                     />
                     {editImagePreview && (
                       <img src={editImagePreview} alt="Preview" className="mt-2 w-32 h-32 rounded-lg object-cover" />
@@ -460,19 +471,14 @@ const AdminVendors = () => {
                   </div>
                 </div>
                 <div className="flex gap-3 mt-6">
-                  <Button type="submit" disabled={loading}>
+                  <button type="submit" disabled={loading}
+                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? 'Updating...' : 'Update Vendor'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      setShowEditModal(false);
-                      setEditingVendor(null);
-                    }}
-                  >
+                  </button>
+                  <button type="button" onClick={() => { setShowEditModal(false); setEditingVendor(null); }}
+                    className="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-200 active:scale-[0.97] transition-all">
                     Cancel
-                  </Button>
+                  </button>
                 </div>
               </form>
             </div>
@@ -482,7 +488,7 @@ const AdminVendors = () => {
       {/* Reset Password Modal */}
       {showPasswordModal && passwordVendor && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-md w-full">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2">Change Password</h3>
               <p className="text-sm text-gray-600 mb-4">
@@ -507,19 +513,14 @@ const AdminVendors = () => {
                   />
                 </div>
                 <div className="flex gap-3 mt-6">
-                  <Button type="submit" disabled={loading}>
+                  <button type="submit" disabled={loading}
+                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? 'Updating...' : 'Update Password'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      setShowPasswordModal(false);
-                      setPasswordVendor(null);
-                    }}
-                  >
+                  </button>
+                  <button type="button" onClick={() => { setShowPasswordModal(false); setPasswordVendor(null); }}
+                    className="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-xl hover:bg-gray-200 active:scale-[0.97] transition-all">
                     Cancel
-                  </Button>
+                  </button>
                 </div>
               </form>
             </div>

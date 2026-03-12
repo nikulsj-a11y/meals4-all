@@ -195,52 +195,36 @@ const VendorProducts = () => {
             <h2 className="text-2xl font-bold text-gray-900">Food Items</h2>
             <p className="text-sm text-gray-600 mt-1">Manage your menu items</p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)}>
-            <Plus className="w-4 h-4 inline mr-2" />
+          <button onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 active:scale-[0.97] transition-all shadow-sm">
+            <Plus className="w-4 h-4" />
             Add Food Item
-          </Button>
+          </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/20">
-            <thead className="bg-white/30">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Image
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Quantity
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-gray-200/60">
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Image</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Quantity</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/20">
+            <tbody className="divide-y divide-gray-100">
               {foodItems.map((item) => (
-                <tr key={item._id} className="hover:bg-white/30">
+                <tr key={item._id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     {item.image ? (
-                      <img
-                        src={`${API_BASE_URL}${item.image}`}
-                        alt={item.name}
-                        className="w-12 h-12 rounded-lg object-cover"
-                      />
+                      <img src={`${API_BASE_URL}${item.image}`} alt={item.name}
+                        className="w-10 h-10 rounded-xl object-cover ring-1 ring-gray-100" />
                     ) : (
-                      <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                        <ImagePlus className="w-5 h-5 text-gray-400" />
+                      <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center ring-1 ring-gray-100">
+                        <ImagePlus className="w-4 h-4 text-gray-300" />
                       </div>
                     )}
                   </td>
@@ -262,56 +246,30 @@ const VendorProducts = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full font-medium inline-flex items-center gap-1 ${
-                        item.isAvailable
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {item.isAvailable ? (
-                        <>
-                          <Eye className="w-3 h-3" />
-                          Available
-                        </>
-                      ) : (
-                        <>
-                          <EyeOff className="w-3 h-3" />
-                          Unavailable
-                        </>
-                      )}
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${item.isAvailable ? 'bg-emerald-400' : 'bg-gray-300'}`} />
+                      <span className={`text-xs font-medium ${item.isAvailable ? 'text-emerald-600' : 'text-gray-400'}`}>
+                        {item.isAvailable ? 'Available' : 'Unavailable'}
+                      </span>
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => handleToggleAvailability(item._id, item.isAvailable)}
-                        variant={item.isAvailable ? "secondary" : "primary"}
-                        className="text-sm px-3 py-1"
-                        title={item.isAvailable ? "Mark as Unavailable" : "Mark as Available"}
-                      >
-                        {item.isAvailable ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
-                      <Button
-                        onClick={() => handleEditItem(item)}
-                        variant="secondary"
-                        className="text-sm px-3 py-1"
-                        title="Edit Item"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        onClick={() => handleDeleteItem(item._id, item.name)}
-                        variant="danger"
-                        className="text-sm px-3 py-1"
-                        title="Delete Item"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => handleToggleAvailability(item._id, item.isAvailable)}
+                        className={`w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center transition-all ${
+                          item.isAvailable ? 'hover:bg-amber-50 text-gray-500 hover:text-amber-600' : 'hover:bg-emerald-50 text-gray-500 hover:text-emerald-600'
+                        }`}
+                        title={item.isAvailable ? "Mark Unavailable" : "Mark Available"}>
+                        {item.isAvailable ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                      <button onClick={() => handleEditItem(item)}
+                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-blue-50 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-all" title="Edit">
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleDeleteItem(item._id, item.name)}
+                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all" title="Delete">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -329,7 +287,7 @@ const VendorProducts = () => {
       {/* Create Food Item Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <h3 className="text-xl font-bold mb-4">Create New Food Item</h3>
             <form onSubmit={handleCreateItem}>
               <Input
@@ -440,7 +398,7 @@ const VendorProducts = () => {
       {/* Edit Food Item Modal */}
       {showEditModal && editingItem && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
             <h3 className="text-xl font-bold mb-4">Edit Food Item</h3>
             <form onSubmit={handleUpdateItem}>
               <Input

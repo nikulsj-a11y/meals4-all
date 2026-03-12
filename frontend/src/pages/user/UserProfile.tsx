@@ -164,7 +164,7 @@ const UserProfile = () => {
               <div className="mt-6">
                 <Button
                   onClick={() => setIsEditing(!isEditing)}
-                  variant={isEditing ? 'secondary' : 'primary'}
+                  variant={isEditing ? 'secondary' : 'orange'}
                   fullWidth
                 >
                   {isEditing ? (
@@ -210,12 +210,12 @@ const UserProfile = () => {
                       value={profileData.address}
                       onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
                       rows={3}
-                      className="w-full px-3.5 py-2.5 glass-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-300 transition-all duration-200 text-gray-800"
+                      className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-300 focus:bg-white transition-all duration-200 text-gray-800"
                       placeholder="Enter your delivery address"
                     />
                   </div>
                   <div className="flex gap-3">
-                    <Button type="submit" disabled={loading}>
+                    <Button type="submit" disabled={loading} variant="orange">
                       <Save className="w-4 h-4 mr-2" />
                       {loading ? 'Saving...' : 'Save Changes'}
                     </Button>
@@ -301,6 +301,7 @@ const UserProfile = () => {
                     <Button
                       onClick={() => navigate('/user/dashboard')}
                       className="mt-4"
+                      variant="orange"
                     >
                       Browse Vendors
                     </Button>

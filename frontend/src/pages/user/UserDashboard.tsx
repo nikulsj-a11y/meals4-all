@@ -419,7 +419,7 @@ const UserDashboard = () => {
                 </div>
                 <p className="text-gray-700 font-semibold">Your cart is empty</p>
                 <p className="text-sm text-gray-400 mt-1 mb-6">Add items from a restaurant to get started</p>
-                <Button onClick={() => setActiveTab('vendors')}>Browse Restaurants</Button>
+                <Button onClick={() => setActiveTab('vendors')} variant="orange">Browse Restaurants</Button>
               </div>
             ) : (
               <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -469,7 +469,7 @@ const UserDashboard = () => {
                 </div>
                 <p className="text-gray-700 font-semibold">No orders yet</p>
                 <p className="text-sm text-gray-400 mt-1 mb-6">Your order history will appear here</p>
-                <Button onClick={() => setActiveTab('vendors')}>Browse Restaurants</Button>
+                <Button onClick={() => setActiveTab('vendors')} variant="orange">Browse Restaurants</Button>
               </div>
             ) : (
               <div className="space-y-3">

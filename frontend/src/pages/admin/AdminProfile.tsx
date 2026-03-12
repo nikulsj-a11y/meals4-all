@@ -129,7 +129,7 @@ const AdminProfile = () => {
       {/* Change Password Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl max-w-md w-full p-6">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <h3 className="text-xl font-bold mb-4">Change Password</h3>
             <form onSubmit={handleChangePassword}>
               <div className="space-y-4">

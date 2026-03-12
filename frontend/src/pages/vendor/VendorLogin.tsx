@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
+import { UtensilsCrossed } from 'lucide-react';
 
 const VendorLogin = () => {
   const [email, setEmail] = useState('');
@@ -41,8 +42,11 @@ const VendorLogin = () => {
     <div className="min-h-screen flex items-center justify-center bg-macos-mesh px-4">
       <Card className="w-full max-w-md backdrop-blur-xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">Meals4All</h1>
-          <p className="text-gray-500 mt-2">Vendor Portal</p>
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <UtensilsCrossed className="w-7 h-7 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Meals4All</h1>
+          <p className="text-gray-400 text-sm mt-1">Vendor Portal</p>
         </div>
 
         <form onSubmit={handleSubmit}>
