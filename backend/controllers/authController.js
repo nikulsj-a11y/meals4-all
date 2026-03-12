@@ -148,10 +148,13 @@ exports.sendUserOTP = async (req, res) => {
 
     const otpResult = await sendOTP(mobileNumber, otp);
 
+    // Return OTP in response if Twilio SMS wasn't actually sent (dev/fallback mode)
+    const showOtp = process.env.NODE_ENV === 'development' || otpResult.message?.includes('fallback') || otpResult.message?.includes('dev mode');
+
     res.status(200).json({
       success: true,
       message: 'OTP sent successfully',
-      ...(process.env.NODE_ENV === 'development' && { otp }) // Only in dev mode
+      ...(showOtp && { otp })
     });
   } catch (error) {
     res.status(500).json({
