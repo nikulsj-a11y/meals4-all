@@ -22,7 +22,7 @@ const UserLogin = () => {
 
     try {
       const response = await api.post('/auth/user/send-otp', { mobileNumber });
-      toast.success('OTP sent successfully!');
+      toast.success('You will receive an OTP call shortly!');
       
       // In development, show OTP in console
       if (response.data.otp) {
@@ -87,7 +87,7 @@ const UserLogin = () => {
         ) : (
           <form onSubmit={handleVerifyOTP}>
             <div className="mb-4 p-3 glass rounded-xl">
-              <p className="text-sm text-gray-500">OTP sent to</p>
+              <p className="text-sm text-gray-500">You'll receive an OTP call on</p>
               <p className="font-semibold text-gray-800">{mobileNumber}</p>
               <button
                 type="button"

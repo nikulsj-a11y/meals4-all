@@ -3,7 +3,7 @@ exports.generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Send OTP via 2Factor.in
+// Send OTP via 2Factor.in (voice call)
 exports.sendOTP = async (mobileNumber, otp) => {
   const apiKey = process.env.TWO_FACTOR_API_KEY;
 
@@ -21,8 +21,8 @@ exports.sendOTP = async (mobileNumber, otp) => {
     const data = await response.json();
 
     if (data.Status === 'Success') {
-      console.log(`✅ OTP sent to ${mobileNumber} via 2Factor.in`);
-      return { success: true, message: 'OTP sent successfully' };
+      console.log(`✅ OTP sent to ${mobileNumber} via 2Factor.in (voice call)`);
+      return { success: true, message: 'OTP sent via voice call' };
     } else {
       console.error('2Factor.in error:', data.Details);
       console.log(`\n📱 OTP for ${mobileNumber}: ${otp} (2Factor.in failed, using fallback)\n`);
