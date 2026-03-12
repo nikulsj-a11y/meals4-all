@@ -71,8 +71,7 @@ export interface OrderItem {
 export interface Order {
   _id: string;
   orderNumber?: string;
-  user: string;
-  customer?: { name: string; mobileNumber: string };
+  user: string | { _id: string; name?: string; mobileNumber?: string };
   vendor: Vendor | string;
   items: OrderItem[];
   totalAmount: number;
