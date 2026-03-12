@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// export const API_BASE_URL = 'https://meals4-all.onrender.com';
-export const API_BASE_URL = 'http://localhost:5001';
+export const API_BASE_URL = 'https://meals4-all.onrender.com';
+// export const API_BASE_URL = 'http://localhost:5001';
+// export const API_BASE_URL = 'http://192.168.1.120:5001';
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   headers: {
